@@ -12,8 +12,9 @@ class BoardsController extends Controller
      */
     public function index()
     {
+        $boards = Board::all();
         // view -> resource/views/boards
-        return view('boards.index');
+        return view('boards.index')->with('lists', $boards);
     }
 
     /**
@@ -44,7 +45,9 @@ class BoardsController extends Controller
      */
     public function show(Board $board)
     {
-        //
+        $board = Board::where('id', $board->id)->first();
+
+        return view('boards.show')->with('board', $board);
     }
 
     /**
@@ -52,15 +55,27 @@ class BoardsController extends Controller
      */
     public function edit(Board $board)
     {
-        //
+        $board = Board::where('id', $board->id)->first();
+
+        return view('boards.edit')->with('board', $board);
     }
 
     /**
      * Update the specified resource in storage.
      */
+
+    //* transfer $board in Board model
     public function update(Request $request, Board $board)
     {
-        //
+
+        $request->validate([
+            'subject' => 'required|max:255',
+            'contents' => 'required|max:1000',
+        ]);
+
+        $board->update($request->all());
+
+        return redirect()->route('boards.index');
     }
 
     /**
@@ -68,6 +83,8 @@ class BoardsController extends Controller
      */
     public function destroy(Board $board)
     {
-        //
+        $board->delete();
+
+        return redirect()->route('boards.index');
     }
 }
